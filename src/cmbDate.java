@@ -1,11 +1,12 @@
 /**************************************************************************
- * Class cmbDate.java to store and work on simple dates
+ * Class cmbDate.java to store and work on simple dates; exercise in trying
+ * things out - java.time.LocalDate does the same job!
  *
  * @author Colin Brough
  * @version $Id$
  */
 
-public class cmbDate
+public class cmbDate implements Comparable<cmbDate>
 {
     //----------------------------------------------------------------------
     // Instance variables - day, month and year
@@ -68,7 +69,6 @@ public class cmbDate
     {
         return day;
     }
-
 
     /**********************************************************************
      * DaysInMonth	Routine to return the number of days in a month, 
@@ -182,4 +182,68 @@ public class cmbDate
         month = m;
         day   = d;
     }
+
+    /**********************************************************************
+     * Method to compare two dates; fulfils requirements of Comparable 
+     * interface
+     *
+     * @param date to compare this object's date to
+     * @return 0 for equal, -1 for less, +1 for more
+     */
+
+    @Override
+    public int compareTo(cmbDate d2)
+    {
+        if (year > d2.getYear())
+        {
+            return 1;
+        }
+        if (year < d2.getYear())
+        {
+            return -1;
+        }
+        if (month > d2.getMonth())
+        {
+            return 1;
+        }
+        if (month < d2.getMonth())
+        {
+            return -1;
+        }
+        if (day > d2.getDay())
+        {
+            return 1;
+        }
+        if (day < d2.getDay())
+        {
+            return -1;
+        }
+        return 0;
+    }
+
+    /**********************************************************************
+     * Checks if this cmbDate date is equal to another date. 
+     *
+     * @param the object to test, NULL returns false
+     * @return true if this is equal to the other date
+     */
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true; // Reference equality
+        }
+        if (obj instanceof cmbDate)
+        {
+            cmbDate d = (cmbDate) obj;
+            return day   == d.getDay()   &&
+                   month == d.getMonth() &&
+                   year  == d.getYear();
+        }
+        return false;
+    }
+    
+      
 }

@@ -11,8 +11,8 @@ import java.time.LocalDate;
 public class RateField
 {
     public LocalDate date;	// Date from which these rates apply
-    public float gasstanding;	// Daily standing charge, gas
-    public float gasunitrate;	// Unit rate, gas
-    public float elecstanding;	// Daily standing charge, electric
-    public float elecunitrate;	// Unit rate, electric
+    public double gasstanding;	// Daily standing charge, gas
+    public double gasunitrate;	// Unit rate, gas
+    public double elecstanding;	// Daily standing charge, electric
+    public double elecunitrate;	// Unit rate, electric
 }

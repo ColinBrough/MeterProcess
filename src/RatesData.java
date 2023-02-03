@@ -7,8 +7,11 @@
  * @version $Id$
  */
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.io.*;
+import java.nio.file.*;
 
 public class RatesData
 {
@@ -43,6 +46,50 @@ public class RatesData
     {
         rates = new ArrayList<>();
         this.addRate(gasStanding, gasUnit, elecStanding, elecUnit, d);
+    }
+
+    /**********************************************************************
+     * Constructor method for rates data - pulls information in from a file,
+     * whose name is passed in as argument
+     *
+     * @param a file to read rates data from
+     */
+
+    public RatesData(File f)
+    {
+        rates = new ArrayList<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try (Scanner sc = new Scanner(f))
+        {
+            System.out.println("Try and read from Rates.dat file here....");
+            while (sc.hasNextLine())
+            {
+                String line = sc.nextLine();
+                if (line.startsWith("#"))
+                {
+                    System.out.println("Comment line skipped");
+                    continue;	// Skip past comment lines
+                }
+                String dateString = line.substring(0,10);
+                LocalDate d = LocalDate.parse(dateString, formatter);
+                System.out.printf("Date found: %s\n", d.toString());
+                Scanner scl = new Scanner(line.substring(10));
+                
+                this.addRate(scl.nextDouble(), // Gas standing charge
+                             scl.nextDouble(), // Gas unit price
+                             scl.nextDouble(), // Electric standing charge
+                             scl.nextDouble(), // Electric unit price
+                             d);               // Date
+                scl.close();
+            }
+            sc.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("Rates.dat file not found");
+            System.exit(0);
+        }
     }
 
     /**********************************************************************

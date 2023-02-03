@@ -6,6 +6,9 @@
  * @version $Id$
  */
 
+import java.time.*;
+import java.io.*;
+
 public class MeterProcessMain
 {
     /**********************************************************************
@@ -16,19 +19,27 @@ public class MeterProcessMain
 
     public static void main(String[] args)
     {
-        char Grtr[] = { '<', '=', '>' };
-                        
-        cmbDate date1, date2;
-        date1 = new cmbDate(2023, 1, 30);
-        date2 = new cmbDate(2023, 1, 30);
-        date1.incDate(2);
-        date2.incDate(-2);
+        LocalDate d1 = LocalDate.of(2023,1, 1);
+        LocalDate d2 = LocalDate.of(2023,1,31);
+        LocalDate d3 = LocalDate.of(2023,2, 1);
+        LocalDate d4 = LocalDate.of(2023,3, 1);
         
-        System.out.printf("Date1 is %02d/%02d/%d\n",
-                          date1.getDay(), date1.getMonth(), date1.getYear());
-        System.out.printf("Date2 is %02d/%02d/%d\n",
-                          date2.getDay(), date2.getMonth(), date2.getYear());
-        System.out.printf("Date1 is %c than Date2\n", Grtr[date1.compareTo(date2) + 1]);
+        RatesData r = new RatesData(1.0,  2.0,  3.0,  4.0, d2);
+        r.addRate(5.0,  6.0,  7.0,  8.0, d3);
+        r.addRate(9.0, 10.0, 11.0, 12.0, d4);
+
+        System.out.printf("d1 = %s : %f\nd2 = %s : %f\nd3 = %s : %f\nd4 = %s : %f\n",
+                          d1.toString(), r.getGasStanding(d1),
+                          d2.toString(), r.getGasStanding(d2),
+                          d3.toString(), r.getGasStanding(d3),
+                          d4.toString(), r.getGasStanding(d4));
+        RatesData r2 = new RatesData(new File("/home/cmb/misc/Home/StationRoad/Utilities/Rates.dat"));
+        System.out.printf("d1 = %s : %f\nd2 = %s : %f\nd3 = %s : %f\nd4 = %s : %f\n",
+                          d1.toString(), r2.getGasStanding(d1),
+                          d2.toString(), r2.getGasStanding(d2),
+                          d3.toString(), r2.getGasStanding(d3),
+                          d4.toString(), r2.getGasStanding(d4));
+
     }
 
     

@@ -3,7 +3,7 @@
  * use by the RatesData class
  *
  * @author Colin Brough
- * @version $Id$
+ * @version Dev_01
  */
 
 import java.time.LocalDate;

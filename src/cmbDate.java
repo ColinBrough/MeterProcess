@@ -3,7 +3,7 @@
  * things out - java.time.LocalDate does the same job!
  *
  * @author Colin Brough
- * @version $Id$
+ * @version Dev_01
  */
 
 public class cmbDate implements Comparable<cmbDate>

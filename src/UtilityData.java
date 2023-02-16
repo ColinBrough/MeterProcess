@@ -5,7 +5,11 @@
  * @version $Id$
  */
 
-import java.util.ArrayList;	// Example, generally useful, import...
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.io.*;
+import java.nio.file.*;
 
 public class UtilityData
 {
@@ -16,47 +20,65 @@ public class UtilityData
     private ArrayList<UtilityField> utilityReadings;
 
     /**********************************************************************
-     * Constructor for objects of class NAME
-     *
-     * @param ......
+     * Constructor for  objects of class UtilityDate - just creates a new
+     * ArrayList internally to hold readings
      */
 
     public UtilityData()   // Constructor
     {
-        
+        utilityReadings = new ArrayList<>();
     }
 
     /**********************************************************************
-     * Method description - setter methods....
+     * Add a gas/electricity meter reading for given date
      *
-     * @param ......
+     * @param LocalDate this reading on
+     * @param double electricity meter reading
+     * @param double gas meter reading
      */
 
-    public void setXXXX()
+    public void addUtilityReading(LocalDate d, double elecMeter, double gasMeter)
     {
         
     }
-
+    
     /**********************************************************************
-     * Method description - getter methods....
+     * Set one or more readings to be stored in the internal  utilityReadings 
+     * ArrayList, potentially integrating those with already present - so
+     * storing in date order, and doing some kind of sanity checking if two
+     * readings with the same date are read in.
      *
-     * @return ......
+     * @param A file object from which to read data
      */
 
-    public XXXX getXXXX()
+    public void setReadingsFromFile(File f)
     {
-        
-    }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try (Scanner sc = new Scanner(f))
+        {
+            System.out.println("Reading from meter reading file " + f.getName()
+                               + " here....");
+            while (sc.hasNextLine())
+            {
+                String line = sc.nextLine();
+                if (line.startsWith("#"))
+                {
+                    System.out.println("Util: comment line skipped");
+                    continue;	// Skip past comment lines
+                }
+                String dateString = line.substring(0,10);
+                LocalDate d = LocalDate.parse(dateString, formatter);
+                System.out.printf("Util: date found: %s\n", d.toString());
+                Scanner scl = new Scanner(line.substring(10));
 
-    /**********************************************************************
-     * Method description - general methods....
-     *
-     * @param ......
-     * @return ......
-     */
-
-    public XXXX XXXX()
-    {
-        
+                scl.close();
+            }
+            sc.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println(f.getName() + " file not found");
+            System.exit(0);
+        }
     }
 }

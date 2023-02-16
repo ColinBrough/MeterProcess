@@ -68,12 +68,12 @@ public class RatesData
                 String line = sc.nextLine();
                 if (line.startsWith("#"))
                 {
-                    System.out.println("Comment line skipped");
+                    System.out.println("Rates: comment line skipped");
                     continue;	// Skip past comment lines
                 }
                 String dateString = line.substring(0,10);
                 LocalDate d = LocalDate.parse(dateString, formatter);
-                System.out.printf("Date found: %s\n", d.toString());
+                System.out.printf("Rates: date found: %s\n", d.toString());
                 Scanner scl = new Scanner(line.substring(10));
                 
                 this.addRate(scl.nextDouble(), // Gas standing charge

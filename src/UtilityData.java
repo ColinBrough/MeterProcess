@@ -30,7 +30,9 @@ public class UtilityData
     }
 
     /**********************************************************************
-     * Add a gas/electricity meter reading for given date
+     * Add a gas/electricity meter reading for given date; first cut just
+     * appends this entry on the end of the array. Better would be to order
+     * by date...
      *
      * @param LocalDate this reading on
      * @param double electricity meter reading
@@ -39,7 +41,11 @@ public class UtilityData
 
     public void addUtilityReading(LocalDate d, double elecMeter, double gasMeter)
     {
-        
+        UtilityField uf = new UtilityField();
+        uf.date = d;
+        uf.gasMeter = gasMeter;
+        uf.elecMeter = elecMeter;
+        utilityReadings.add(uf);
     }
     
     /**********************************************************************
@@ -68,9 +74,10 @@ public class UtilityData
                 }
                 String dateString = line.substring(0,10);
                 LocalDate d = LocalDate.parse(dateString, formatter);
-                System.out.printf("Util: date found: %s\n", d.toString());
+                System.out.printf("Util: Date: %s  ", d.toString());
                 Scanner scl = new Scanner(line.substring(10));
 
+                this.addUtilityReading(d, scl.nextDouble(),scl.nextDouble());
                 scl.close();
             }
             sc.close();

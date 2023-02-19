@@ -69,23 +69,38 @@ public class UtilityData
                 String line = sc.nextLine();
                 if (line.startsWith("#"))
                 {
-                    System.out.println("Util: comment line skipped");
                     continue;	// Skip past comment lines
                 }
                 String dateString = line.substring(0,10);
                 LocalDate d = LocalDate.parse(dateString, formatter);
-                System.out.printf("Util: Date: %s  ", d.toString());
+                System.out.printf("Util: Date: %s\n", d.toString());
                 Scanner scl = new Scanner(line.substring(10));
 
                 this.addUtilityReading(d, scl.nextDouble(),scl.nextDouble());
                 scl.close();
             }
             sc.close();
+
+            Collections.sort(utilityReadings);	// Make sure the entries are date sorted
         }
         catch (FileNotFoundException e)
         {
             System.out.println(f.getName() + " file not found");
             System.exit(0);
+        }
+    }
+
+    /**********************************************************************
+     * Print out all of the meter readings currently held in this object
+     */
+
+    public void printUtilityReadings()
+    {
+        for (int i = 0; i < utilityReadings.size(); i++)
+        {
+            UtilityField ud = utilityReadings.get(i);
+            System.out.printf("%3d %s %8.3f %8.3f\n", i,
+                              ud.date, ud.gasMeter, ud.elecMeter);
         }
     }
 }

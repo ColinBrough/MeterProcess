@@ -22,7 +22,11 @@ public class MeterProcessMain
         RatesData r = new RatesData(new File("/home/cmb/misc/Home/StationRoad/Utilities/Rates.dat"));
 
         UtilityData u = new UtilityData();
-        u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/elecgas.txt"));
+        //        u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/elecgas.txt"));
+        u.setReadingsFromFile(new File("/home/cmb/Dropbox/Misc/elecgas.txt"));
+        System.out.printf("\n\n----------------------------------------------------------------------\n\n");
+        u.printUtilityReadings();
+        
     }
     
 }

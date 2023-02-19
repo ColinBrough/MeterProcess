@@ -8,7 +8,7 @@
 
 import java.time.LocalDate;
 
-public class UtilityField
+public class UtilityField implements Comparable<UtilityField>
 {
     //----------------------------------------------------------------------
     // Each meter reading entry holds a date and gas/electric meter readings;
@@ -19,4 +19,29 @@ public class UtilityField
     public LocalDate date;	// Date of these readings
     public double gasMeter;	// Gas meter reading
     public double elecMeter;	// Electric meter reading
+
+    //------------------------------------------------------------------
+    // Equality method
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj instanceof UtilityField)
+        {
+            UtilityField u = (UtilityField) obj;
+            return date.equals(u.date) &&
+                gasMeter == u.gasMeter &&
+                elecMeter == u.elecMeter;
+        }
+        return false;
+    }
+    
+    //------------------------------------------------------------------
+    // Comparison function for Comparable interface
+
+    @Override
+    public int compareTo(UtilityField otherUtility)
+    {
+        return date.compareTo(otherUtility.date);
+    }
 }

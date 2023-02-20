@@ -19,7 +19,7 @@ public class RatesData
     // Instance variable - ArrayList holding rates, implicitly ordered by
     // date, rates applying most recently added last to the end of the list.
 
-    private ArrayList<RateField> rates;
+    private ArrayList<RatesField> rates;
     
     /**********************************************************************
      * Constructor for objects of class RatesData, no arguments
@@ -62,18 +62,15 @@ public class RatesData
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         try (Scanner sc = new Scanner(f))
         {
-            System.out.println("Try and read from Rates.dat file here....");
             while (sc.hasNextLine())
             {
                 String line = sc.nextLine();
                 if (line.startsWith("#"))
                 {
-                    System.out.println("Rates: comment line skipped");
                     continue;	// Skip past comment lines
                 }
                 String dateString = line.substring(0,10);
                 LocalDate d = LocalDate.parse(dateString, formatter);
-                System.out.printf("Rates: date found: %s\n", d.toString());
                 Scanner scl = new Scanner(line.substring(10));
                 
                 this.addRate(scl.nextDouble(), // Gas standing charge
@@ -108,23 +105,24 @@ public class RatesData
     public void addRate(double gasStanding, double gasUnit, double elecStanding,
                         double elecUnit, LocalDate d)
     {
-        RateField rateE = new RateField();
+        RatesField rateE = new RatesField();
         rateE.date = d;
         rateE.gasstanding  = gasStanding;
         rateE.gasunitrate  = gasUnit;
         rateE.elecstanding = elecStanding;
         rateE.elecunitrate = elecUnit;
         rates.add(rateE);
+        Collections.sort(rates);	// Make sure entries are date sorted
     }
 
     /**********************************************************************
-     * Private method to return the RateField that applies to the date
+     * Private method to return the RatesField that applies to the date
      * passed in. Start at most recent (last in 'rates' ArrayList), and
      * work down till the date passed isn't less than the one in the
-     * RateField. Used by the getters for applicable gas/electric rates.
+     * RatesField. Used by the getters for applicable gas/electric rates.
      */
 
-    private RateField getRate(LocalDate d)
+    private RatesField getRate(LocalDate d)
     {
         if (rates.size() == 0)
         {
@@ -149,7 +147,7 @@ public class RatesData
 
     public double getGasStanding(LocalDate d)
     {
-        RateField r = this.getRate(d);
+        RatesField r = this.getRate(d);
         
         if (r == null)
         {
@@ -167,7 +165,7 @@ public class RatesData
 
     public double getGasUnit(LocalDate d)
     {
-        RateField r = this.getRate(d);
+        RatesField r = this.getRate(d);
         
         if (r == null)
         {
@@ -185,7 +183,7 @@ public class RatesData
 
     public double getElecStanding(LocalDate d)
     {
-        RateField r = this.getRate(d);
+        RatesField r = this.getRate(d);
         
         if (r == null)
         {
@@ -203,7 +201,7 @@ public class RatesData
 
     public double getElecUnit(LocalDate d)
     {
-        RateField r = this.getRate(d);
+        RatesField r = this.getRate(d);
         
         if (r == null)
         {

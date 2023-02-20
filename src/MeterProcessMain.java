@@ -19,13 +19,16 @@ public class MeterProcessMain
 
     public static void main(String[] args)
     {
-        RatesData r = new RatesData(new File("/home/cmb/misc/Home/StationRoad/Utilities/Rates.dat"));
-
+        LocalDate d = LocalDate.of(2023, 5, 1);
+        
         UtilityData u = new UtilityData();
-        //        u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/elecgas.txt"));
+        // u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/elecgas.txt"));
         u.setReadingsFromFile(new File("/home/cmb/Dropbox/Misc/elecgas.txt"));
         System.out.printf("\n\n----------------------------------------------------------------------\n\n");
+        u.interpolateReadings();
         u.printUtilityReadings();
+        //        u.printUtilityCosts();
+        System.out.printf("Index of %s is %d\n", d, u.indexFromDate(d));
         
     }
     

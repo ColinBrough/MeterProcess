@@ -1,8 +1,10 @@
 /**************************************************************************
- * Class UtilityData.java to...
+ * Class UtilityData.java hold and process meter readings, gas and electric
+ * and calculate derived values from those - including weekly, monthly and
+ * annual values.
  *
  * @author Colin Brough
- * @version $Id$
+ * @version Dev_01
  */
 
 import java.time.*;
@@ -14,6 +16,10 @@ import java.nio.file.*;
 
 public class UtilityData
 {
+    // Magic number to convert from units (m3) to kWh (which is what tariff figure is)
+    static final double GASCONVERSION = 10.8237;
+
+    // The filename of the rates file.
     static final String RatesFilename = "/home/cmb/misc/Home/StationRoad/Utilities/Rates.dat";
     
     //----------------------------------------------------------------------
@@ -121,14 +127,14 @@ public class UtilityData
         for (int i = 0; i < utilityReadings.size(); i++)
         {
             UtilityField uf = utilityReadings.get(i);
-            System.out.printf("%3d %s £%6.2f £%6.2f\n", i,
-                              uf.date, 2.34, 3.14);
+            System.out.printf("%3d %s £%6.2f £%6.2f | £%6.2f\n", i,
+                              uf.date, uf.gascost, uf.eleccost, uf.totalcost);
         }
     }
 
     /**********************************************************************
      * Given a populated set of meter readings, run through and add 
-     * interpolated readings where there are any gaps
+     * interpolated readings where there are any gaps.
      */
 
     public void interpolateReadings()
@@ -162,6 +168,54 @@ public class UtilityData
         Collections.sort(utilityReadings);	// Make sure the entries are date sorted
     }
 
+    /**********************************************************************
+     * Once we have a populated and interpolated set of meter readings, run
+     * through and calculate the derived values - pulling in the relevant
+     * rates data, and calculating daily usage and costs.
+     */
+
+    public void calculateDailyCosts()
+    {
+        if (utilityReadings.size() == 0)
+        {
+            return;
+        }
+
+        //------------------------------------------------------------------
+        // First calculate the daily usage - difference between "today"'s
+        // readings and those from "yesterday"....
+        
+        UtilityField prev = utilityReadings.get(0);
+        prev.gasUsed  = 0.0;
+        prev.elecUsed = 0.0;
+        
+        for (int i = 1; i < utilityReadings.size(); i++)
+        {
+            UtilityField current = utilityReadings.get(i);
+
+            current.gasUsed  = current.gasMeter  - prev.gasMeter;
+            current.elecUsed = current.elecMeter - prev.elecMeter;
+            prev = current;
+        }
+
+        //------------------------------------------------------------------
+        // Next populate the rates fields and the costs
+
+        for (int i = 0; i < utilityReadings.size(); i++)
+        {
+            UtilityField current = utilityReadings.get(i);
+
+            current.gasstanding  = ratesData.getGasStanding(current.date);
+            current.gasunitrate  = ratesData.getGasUnit(current.date);
+            current.elecstanding = ratesData.getElecStanding(current.date);
+            current.elecunitrate = ratesData.getElecUnit(current.date);
+
+            current.gascost  = current.gasstanding  + current.gasUsed  * current.gasunitrate * GASCONVERSION;
+            current.eleccost = current.elecstanding + current.elecUsed * current.elecunitrate;
+            current.totalcost = current.gascost + current.eleccost;
+        }
+    }
+    
     /**********************************************************************
      * Find the index in meter readings, given date. Inefficient linear search!
      *

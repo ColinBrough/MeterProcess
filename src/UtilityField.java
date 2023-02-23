@@ -17,8 +17,25 @@ public class UtilityField implements Comparable<UtilityField>
     // hiding thing, or put those methods in the UtilityData class...
     
     public LocalDate date;	// Date of these readings
-    public double gasMeter;	// Gas meter reading
-    public double elecMeter;	// Electric meter reading
+    public double gasMeter;	// Gas meter reading, absolute
+    public double elecMeter;	// Electric meter reading, absolute
+    public double gasUsed;	// Calculated difference between this and previous reading
+    public double elecUsed;	// Calculated difference between this and previous reading
+
+    //------------------------------------------------------------------
+    // The following fields are derived from the rates file...
+    
+    public double gasstanding;	// Daily standing charge, gas
+    public double gasunitrate;	// Unit rate, gas
+    public double elecstanding;	// Daily standing charge, electric
+    public double elecunitrate;	// Unit rate, electric
+
+    //------------------------------------------------------------------
+    // The following fields are calculated from the above fields
+
+    public double gascost;
+    public double eleccost;
+    public double totalcost;
 
     //------------------------------------------------------------------
     // Equality method

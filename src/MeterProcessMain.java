@@ -25,11 +25,11 @@ public class MeterProcessMain
         // u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/elecgas.txt"));
         u.setReadingsFromFile(new File("/home/cmb/Dropbox/Misc/elecgas.txt"));
         System.out.printf("\n\n----------------------------------------------------------------------\n\n");
-        u.interpolateReadings();
+        u.interpolateReadings();	// Find the "in-between" meter readings
+        u.calculateDailyCosts();	// Calculate all the derived values, inc costs
         u.printUtilityReadings();
-        //        u.printUtilityCosts();
+        u.printUtilityCosts();
         System.out.printf("Index of %s is %d\n", d, u.indexFromDate(d));
         
     }
-    
 }

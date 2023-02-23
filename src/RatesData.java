@@ -122,7 +122,7 @@ public class RatesData
      * RatesField. Used by the getters for applicable gas/electric rates.
      */
 
-    private RatesField getRate(LocalDate d)
+    public RatesField getRate(LocalDate d)
     {
         if (rates.size() == 0)
         {

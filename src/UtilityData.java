@@ -42,6 +42,49 @@ public class UtilityData
     }
 
     /**********************************************************************
+     * Getter for UtilityField data at a given date
+     *
+     * @param The date for which data should be returned
+     * @return UtilityField object, if present, null if none
+     */
+
+    public UtilityField getGasData(LocalDate d)
+    {
+        for (int i = 0; i < utilityReadings.size(); i++)
+        {
+            if (utilityReadings.get(i).date == d)
+            {
+                return utilityReadings.get(i);
+            }
+            if (utilityReadings.get(i).date.compareTo(d) > 0)
+            {
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    /**********************************************************************
+     * Getter for UtilityField data at a given date, plus an increment (0..6)
+     *
+     * @param d, the date for which data should be returned
+     * @param inc, the increment in days beyond given date
+     * @return UtilityField object, if present, null if none
+     */
+
+    public UtilityField getGasData(LocalDate d, int inc)
+    {
+        if ((inc < 0) || (utilityReadings.size() == 0))
+        {
+            return null;
+        }
+        
+        long days = ChronoUnit.DAYS.between(utilityReadings.get(0).date, d);
+        System.out.printf("Days between %s and %s = %d\n", d, utilityReadings.get(0).date, days);
+        return null;
+    }
+    
+    /**********************************************************************
      * Add a gas/electricity meter reading for given date; first cut just
      * appends this entry on the end of the array. Better would be to order
      * by date...
@@ -124,11 +167,58 @@ public class UtilityData
 
     public void printUtilityCosts()
     {
+        System.out.printf("    Date       Gas    Electric | Total\n" +
+                          "-------------------------------+-----------\n");
+        
         for (int i = 0; i < utilityReadings.size(); i++)
         {
             UtilityField uf = utilityReadings.get(i);
             System.out.printf("%3d %s £%6.2f £%6.2f | £%6.2f\n", i,
                               uf.date, uf.gascost, uf.eleccost, uf.totalcost);
+        }
+    }
+
+    /**********************************************************************
+     * Print out meter readings for whole weeks. Data for (possible) first
+     * partial week and for (possible) last partial week are scaled from
+     * the number of whole days data available. This depends on every day
+     * in the ArrayList being filled in (ie after successful interpolation).
+     */
+
+    public void printWeeklyReadings()
+    {
+        if (utilityReadings.size() == 0)
+        {
+            System.out.println("WARNING: no utility data present\n");
+            return;
+        }
+        UtilityField uf0 = utilityReadings.get(0);
+        int DoW = uf0.date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
+
+        int FirstFullWeek = 7 - (DoW - 1);	// Index in ArrayList where first full week starts
+        int WeekCount = 0;
+        System.out.printf("Wk    Date    S   Gas Mtr  £Gas Elec Mtr  £Elec  £Total\n" +
+                          "------------------------------------------------------\n");
+        for (int i = FirstFullWeek; i < utilityReadings.size(); i += 7)
+        {
+            int span = 7;
+            if ((i + 7) >= utilityReadings.size())
+            {
+                span = utilityReadings.size() - i;
+            }
+            double gcost = 0.0, ecost = 0.0, tcost = 0.0, gused = 0.0, eused = 0.0;
+            for (int j = 0; j < span; j++)
+            {
+                gcost += utilityReadings.get(i+j).gascost;
+                ecost += utilityReadings.get(i+j).eleccost;
+                tcost += utilityReadings.get(i+j).totalcost;
+                gused += utilityReadings.get(i+j).gasUsed;
+                eused += utilityReadings.get(i+j).elecUsed;
+            }
+           
+            System.out.printf("%2d %s %d %8.3f %6.3f %8.3f %6.3f %7.3f\n",
+                              WeekCount++, utilityReadings.get(i).date, span,
+                              gused, gcost, eused, ecost, tcost);
         }
     }
 

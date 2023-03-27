@@ -179,46 +179,58 @@ public class UtilityData
     }
 
     /**********************************************************************
-     * Print out meter readings for whole weeks. Data for (possible) first
-     * partial week and for (possible) last partial week are scaled from
-     * the number of whole days data available. This depends on every day
-     * in the ArrayList being filled in (ie after successful interpolation).
+     * Output meter data (usage, cost) for whole weeks. Any initial partial
+     * week is ignored. Full weeks are output, and the last (possibly 
+     * partial) week is output. This depends on every day in the ArrayList
+     * being filled in (ie after successful interpolation). Output goes to
+     * file.
      */
 
     public void printWeeklyReadings()
     {
-        if (utilityReadings.size() == 0)
+        try
         {
-            System.out.println("WARNING: no utility data present\n");
-            return;
-        }
-        UtilityField uf0 = utilityReadings.get(0);
-        int DoW = uf0.date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
+            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/Weekly.dat");
 
-        int FirstFullWeek = 7 - (DoW - 1);	// Index in ArrayList where first full week starts
-        int WeekCount = 0;
-        System.out.printf("Wk    Date    S   Gas Mtr  £Gas Elec Mtr  £Elec  £Total\n" +
-                          "------------------------------------------------------\n");
-        for (int i = FirstFullWeek; i < utilityReadings.size(); i += 7)
-        {
-            int span = 7;
-            if ((i + 7) >= utilityReadings.size())
+            if (utilityReadings.size() == 0)
             {
-                span = utilityReadings.size() - i;
+                System.out.println("WARNING: no utility data present\n");
+                return;
             }
-            double gcost = 0.0, ecost = 0.0, tcost = 0.0, gused = 0.0, eused = 0.0;
-            for (int j = 0; j < span; j++)
+            UtilityField uf0 = utilityReadings.get(0);
+            int DoW = uf0.date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
+
+            int FirstFullWeek = 7 - (DoW - 1);	// Index in ArrayList where first full week starts
+            int WeekCount = 0;
+            stream.printf("# Wk  Date    S     Gas Use    £Gas   Elec Use    £Elec    £Total\n" +
+                          "#-------------------------------------------------------------------\n");
+            for (int i = FirstFullWeek; i < utilityReadings.size(); i += 7)
             {
-                gcost += utilityReadings.get(i+j).gascost;
-                ecost += utilityReadings.get(i+j).eleccost;
-                tcost += utilityReadings.get(i+j).totalcost;
-                gused += utilityReadings.get(i+j).gasUsed;
-                eused += utilityReadings.get(i+j).elecUsed;
-            }
-           
-            System.out.printf("%2d %s %d %8.3f %6.3f %8.3f %6.3f %7.3f\n",
+                int span = 7;
+                if ((i + 7) >= utilityReadings.size())
+                {
+                    span = utilityReadings.size() - i;
+                }
+                double gcost = 0.0, ecost = 0.0, tcost = 0.0, gused = 0.0, eused = 0.0;
+                for (int j = 0; j < span; j++)
+                {
+                    gcost += utilityReadings.get(i+j).gascost;
+                    ecost += utilityReadings.get(i+j).eleccost;
+                    tcost += utilityReadings.get(i+j).totalcost;
+                    gused += utilityReadings.get(i+j).gasUsed;
+                    eused += utilityReadings.get(i+j).elecUsed;
+                }
+                
+                stream.printf("%2d %s %d %10.3f %8.3f %10.3f %8.3f %9.3f\n",
                               WeekCount++, utilityReadings.get(i).date, span,
                               gused, gcost, eused, ecost, tcost);
+            }
+            stream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // Print an error message, but otherwise do nothing
+            System.out.println("Unable to open 'Weekly.dat' for writing");
         }
     }
 

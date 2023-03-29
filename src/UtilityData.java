@@ -235,6 +235,66 @@ public class UtilityData
     }
 
     /**********************************************************************
+     * Print to file the per day (Mon/Tue/Wed/...) daily usage and costs,
+     * so can plot on which days we use most/least energy. Need to calculate
+     * the information before we can output it.
+     *
+     */
+
+    public void printPerDayReadings()
+    {
+	// Usage on each day of week (1..7); not all fields populated
+        UtilityField DailyUsage[] = new UtilityField[8];
+        // Number of days of data collected for each day of week (1..7)
+        int NumDays[] = new int[8];
+        for (int i = 1; i <=7; i++)
+        {
+            DailyUsage[i] = new UtilityField();
+            DailyUsage[i].gasUsed   = 0.0;	// Other unused fields
+            DailyUsage[i].elecUsed  = 0.0;	// left unset...
+            DailyUsage[i].gascost   = 0.0;
+            DailyUsage[i].eleccost  = 0.0;
+            DailyUsage[i].totalcost = 0.0;
+            NumDays[i] = 0;
+        }
+        
+        for (int i = 0; i < utilityReadings.size(); i++)
+        {
+            UtilityField uf = utilityReadings.get(i);
+            int DoW = uf.date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
+            
+            NumDays[DoW]++;
+            DailyUsage[DoW].gasUsed   += uf.gasUsed;
+            DailyUsage[DoW].elecUsed  += uf.elecUsed;
+            DailyUsage[DoW].gascost   += uf.gascost;
+            DailyUsage[DoW].eleccost  += uf.eleccost;
+            DailyUsage[DoW].totalcost += uf.totalcost;
+        }
+        try
+        {
+            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/DaysOfWeek.dat");
+
+            stream.printf("#   Gas Used  Elec Used     £Gas    £Elec   £Total\n" +
+                          "#------------------------------------------------------\n");
+            for (int i = 1; i <=7; i++)
+            {
+                stream.printf("%d %10.3f %10.3f %8.2f %8.2f %8.2f\n", i,
+                              DailyUsage[i].gasUsed   / NumDays[i],
+                              DailyUsage[i].elecUsed  / NumDays[i],
+                              DailyUsage[i].gascost   / NumDays[i],
+                              DailyUsage[i].eleccost  / NumDays[i],
+                              DailyUsage[i].totalcost / NumDays[i]);
+            }
+            stream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // Print an error message, but otherwise do nothing
+            System.out.println("Unable to open 'DaysOfWeek.dat' for writing");
+        }
+    }
+    
+    /**********************************************************************
      * Given a populated set of meter readings, run through and add 
      * interpolated readings where there are any gaps.
      */

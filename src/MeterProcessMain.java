@@ -35,6 +35,7 @@ public class MeterProcessMain
         u.printUtilityCosts();		// Print daily costs
         u.printWeeklyReadings();	// Print out the weekly data
         u.printPerDayReadings();	// Print out per-day summary
+        u.printMonthlyReadings();	// Print out the monthly data
         
         System.out.printf("Index of %s is %d\n", d, u.indexFromDate(d));
 

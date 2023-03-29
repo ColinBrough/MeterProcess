@@ -293,6 +293,62 @@ public class UtilityData
             System.out.println("Unable to open 'DaysOfWeek.dat' for writing");
         }
     }
+
+    /**********************************************************************
+     * Print to file the monthly usage and costs data, so we can plot. Have
+     * to compute them on the fly
+     */
+
+    public void printMonthlyReadings()
+    {
+        int year, month;
+        double gasUsed = 0.0, elecUsed = 0.0, gasCost = 0.0, elecCost = 0.0, totalCost = 0.0;
+        UtilityField uf = null;
+
+        try
+        {
+            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/Monthly.dat");
+            stream.printf("# Month   Gas Used  Elec Used    £Gas   £Elec  £Total\n" +
+                          "#-------------------------------------------------------\n");
+            
+            for (int i = 0; i < utilityReadings.size(); i++)
+            {
+                uf = utilityReadings.get(i);
+                if ((uf.date.getDayOfMonth() == 1) && (i > 0))
+                {
+                    int m = uf.date.getMonthValue() - 1;
+                    int y = uf.date.getYear();
+                    if (m == 0)
+                    {
+                        y--;
+                        m = 12;
+                    }
+                    
+                    stream.printf("%02d-%04d %10.3f %10.3f %7.2f %7.2f %7.2f\n", m, y,
+                                  gasUsed, elecUsed, gasCost, elecCost, totalCost);
+                    gasUsed   = 0.0;
+                    elecUsed  = 0.0;
+                    gasCost   = 0.0;
+                    elecCost  = 0.0;
+                    totalCost = 0.0;
+                }
+                gasUsed   += uf.gasUsed;
+                elecUsed  += uf.elecUsed;
+                gasCost   += uf.gascost;
+                elecCost  += uf.eleccost;
+                totalCost += uf.totalcost;
+            }
+            stream.printf("%02d-%04d %10.3f %10.3f %7.2f %7.2f %7.2f\n",
+                          uf.date.getMonthValue(), uf.date.getYear(),
+                          gasUsed, elecUsed, gasCost, elecCost, totalCost);
+            stream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // Print an error message, but otherwise do nothing
+            System.out.println("Unable to open 'Monthly.dat' for writing");
+        }
+    }
     
     /**********************************************************************
      * Given a populated set of meter readings, run through and add 

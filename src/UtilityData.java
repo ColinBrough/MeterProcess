@@ -149,6 +149,7 @@ public class UtilityData
 
     /**********************************************************************
      * Print out all of the meter readings currently held in this object
+     * to the standard output
      */
 
     public void printUtilityReadings()
@@ -162,19 +163,31 @@ public class UtilityData
     }
 
     /**********************************************************************
-     * Print out all of the computed costs for data held in this object
+     * Print out all of the computed costs for data held in this object to
+     * file from which these can be plotted
      */
 
     public void printUtilityCosts()
     {
-        System.out.printf("    Date       Gas    Electric | Total\n" +
-                          "-------------------------------+-----------\n");
-        
-        for (int i = 0; i < utilityReadings.size(); i++)
+        try
         {
-            UtilityField uf = utilityReadings.get(i);
-            System.out.printf("%3d %s £%6.2f £%6.2f | £%6.2f\n", i,
+            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/Daily.dat");
+
+            stream.printf("#   Date          Gas Electric  Total\n" +
+                          "#------------------------------------------\n");
+            
+            for (int i = 0; i < utilityReadings.size(); i++)
+            {
+                UtilityField uf = utilityReadings.get(i);
+                stream.printf("%3d %s %6.2f %8.2f %6.2f\n", i,
                               uf.date, uf.gascost, uf.eleccost, uf.totalcost);
+            }
+            stream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // Print an error message, but otherwise do nothing
+            System.out.println("Unable to open 'Daily.dat' for writing");
         }
     }
 

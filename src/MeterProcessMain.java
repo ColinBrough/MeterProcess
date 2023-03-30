@@ -31,7 +31,7 @@ public class MeterProcessMain
         System.out.printf("\n\n----------------------------------------------------------------------\n\n");
         u.interpolateReadings();	// Find the "in-between" meter readings
         u.calculateDailyCosts();	// Calculate all the derived values, inc costs
-        u.printUtilityReadings();	// Print daily readings/usage
+        // u.printUtilityReadings();	// Print daily readings/usage
         u.printUtilityCosts();		// Print daily costs
         u.printWeeklyReadings();	// Print out the weekly data
         u.printPerDayReadings();	// Print out per-day summary

@@ -271,17 +271,23 @@ public class UtilityData
             NumDays[i] = 0;
         }
         
+	// Around when we moved in, after dehumidifiers stopped, so electricity usage
+        // should be coming down. 
+        LocalDate d = LocalDate.of(2022, 8, 1);
         for (int i = 0; i < utilityReadings.size(); i++)
         {
             UtilityField uf = utilityReadings.get(i);
-            int DoW = uf.date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
-            
-            NumDays[DoW]++;
-            DailyUsage[DoW].gasUsed   += uf.gasUsed;
-            DailyUsage[DoW].elecUsed  += uf.elecUsed;
-            DailyUsage[DoW].gascost   += uf.gascost;
-            DailyUsage[DoW].eleccost  += uf.eleccost;
-            DailyUsage[DoW].totalcost += uf.totalcost;
+            if (uf.date.compareTo(d) > 0)	// After 1st August, so more normal usage!
+            {
+                int DoW = uf.date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
+                
+                NumDays[DoW]++;
+                DailyUsage[DoW].gasUsed   += uf.gasUsed;
+                DailyUsage[DoW].elecUsed  += uf.elecUsed;
+                DailyUsage[DoW].gascost   += uf.gascost;
+                DailyUsage[DoW].eleccost  += uf.eleccost;
+                DailyUsage[DoW].totalcost += uf.totalcost;
+            }
         }
         try
         {

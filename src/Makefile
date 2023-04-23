@@ -16,7 +16,7 @@ all:	$(EXE)
 
 class:	$(patsubst %.java,%.class,$(wildcard *.java))
 
-$(EXE): *.class
+$(EXE): class
 	jar cfm $(EXE) manifest.mf *.class
 	chmod u+x $(EXE)
 

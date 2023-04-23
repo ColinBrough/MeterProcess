@@ -18,7 +18,9 @@ public class UtilityData
 {
     // Magic number to convert from units (m3) to kWh (which is what tariff figure is)
     static final double GASCONVERSION = 10.8237;
-
+    // Multiplication factor representing additional cost of VAT on gas and electricity costs
+    static final double VAT = 1.05;
+    
     // The filename of the rates file.
     static final String RatesFilename = "/home/cmb/misc/Home/StationRoad/Utilities/Rates.dat";
     
@@ -512,8 +514,8 @@ public class UtilityData
             current.elecstanding = ratesData.getElecStanding(current.date);
             current.elecunitrate = ratesData.getElecUnit(current.date);
 
-            current.gascost  = current.gasstanding  + current.gasUsed  * current.gasunitrate * GASCONVERSION;
-            current.eleccost = current.elecstanding + current.elecUsed * current.elecunitrate;
+            current.gascost  = VAT * ( current.gasstanding  + current.gasUsed  * current.gasunitrate * GASCONVERSION );
+            current.eleccost = VAT * ( current.elecstanding + current.elecUsed * current.elecunitrate );
             current.totalcost = current.gascost + current.eleccost;
         }
     }

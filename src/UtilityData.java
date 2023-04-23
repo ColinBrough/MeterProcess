@@ -368,6 +368,71 @@ public class UtilityData
             System.out.println("Unable to open 'Monthly.dat' for writing");
         }
     }
+
+    /**********************************************************************
+     * Print to file for plotting the per-month costs so can plot in
+     * which months we use most/least energy. Need to calculate the
+     * information before we can output it.
+     */
+
+    public void printPerMonthReadings()
+    {
+	// Usage on each month of the year (1..12); not all fields populated
+        UtilityField MonthlyUsage[] = new UtilityField[13];
+        // Number of months of data collected for each month (1..12)
+        int NumMonths[] = new int[13];
+        for (int i = 1; i <=7; i++)
+        {
+            MonthlyUsage[i] = new UtilityField();
+            MonthlyUsage[i].gasUsed   = 0.0;	// Other unused fields
+            MonthlyUsage[i].elecUsed  = 0.0;	// left unset...
+            MonthlyUsage[i].gascost   = 0.0;
+            MonthlyUsage[i].eleccost  = 0.0;
+            MonthlyUsage[i].totalcost = 0.0;
+            NumMonths[i] = 0;
+        }
+        
+	// Around when we moved in, after dehumidifiers stopped, so electricity usage
+        // should be coming down...
+        LocalDate d = LocalDate.of(2022, 8, 1);
+        for (int i = 0; i < utilityReadings.size(); i++)
+        {
+            UtilityField uf = utilityReadings.get(i);
+            if (uf.date.compareTo(d) > 0)	// After 1st August, so more normal usage!
+            {
+                int month = uf.date.getMonthValue(); // 1..12
+                
+                NumMonths[month]++;
+                MonthlyUsage[month].gasUsed   += uf.gasUsed;
+                MonthlyUsage[month].elecUsed  += uf.elecUsed;
+                MonthlyUsage[month].gascost   += uf.gascost;
+                MonthlyUsage[month].eleccost  += uf.eleccost;
+                MonthlyUsage[month].totalcost += uf.totalcost;
+            }
+        }
+        try
+        {
+            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/DaysOfWeek.dat");
+
+            stream.printf("#   Gas Used  Elec Used     £Gas    £Elec   £Total\n" +
+                          "#------------------------------------------------------\n");
+            for (int i = 1; i <=7; i++)
+            {
+                stream.printf("%d %10.3f %10.3f %8.2f %8.2f %8.2f\n", i,
+                              MonthlyUsage[i].gasUsed   / NumMonths[i],
+                              MonthlyUsage[i].elecUsed  / NumMonths[i],
+                              MonthlyUsage[i].gascost   / NumMonths[i],
+                              MonthlyUsage[i].eleccost  / NumMonths[i],
+                              MonthlyUsage[i].totalcost / NumMonths[i]);
+            }
+            stream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // Print an error message, but otherwise do nothing
+            System.out.println("Unable to open 'DaysOfWeek.dat' for writing");
+        }
+    }
     
     /**********************************************************************
      * Given a populated set of meter readings, run through and add 

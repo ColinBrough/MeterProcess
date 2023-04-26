@@ -11,6 +11,8 @@ import java.io.*;
 
 public class MeterProcessMain
 {
+    static final String DIRECTORY = "/home/cmb/misc/Home/StationRoad/Utilities/";
+
     /**********************************************************************
      * main method - program entry point
      *
@@ -24,7 +26,7 @@ public class MeterProcessMain
         UtilityData u = new UtilityData();	// Implicitly reads the rates data
 
         // First read the historic data
-        u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/MeterReadings.dat"));
+        u.setReadingsFromFile(new File(DIRECTORY + "MeterReadings.dat"));
 
         // Then read in and add to the same dataset the more recent stuff from Dropbox...
         u.setReadingsFromFile(new File("/home/cmb/Dropbox/Misc/elecgas.txt"));
@@ -32,9 +34,28 @@ public class MeterProcessMain
         u.interpolateReadings();	// Find the "in-between" meter readings
         u.calculateDailyCosts();	// Calculate all the derived values, inc costs
 
-        u.printUtilityCosts();		// Print daily costs to file for plotting
-        u.printWeeklyReadings();	// Print weekly data to file for plotting
-        u.printPerDayReadings();	// Print per-day summary to file for plotting
-        u.printMonthlyReadings();	// Print monthly data to file for plotting
+        // Print daily costs to file for plotting;     argument is output filename
+        u.printUtilityCosts("Daily.dat");
+        
+	// Print weekly data to file for plotting;     argument is output filename
+        u.printWeeklyReadings("Weekly.dat");
+        
+	// Print per-day summary to file for plotting; argument is output filename
+        u.printPerDayReadings("DaysOfWeek.dat");
+        
+	// Print monthly data to file for plotting;    argument is output filename
+        u.printMonthlyReadings("Monthly.dat");
+
+        //------------------------------------------------------------------
+        // Calculate smoothed out data - a new daily value is average of
+        // previous 30 days values...
+        
+        UtilityData uSmooth = new UtilityData();
+        uSmooth.setReadingsFromExisting(u);	// Calculates smoothed out values
+
+        uSmooth.printUtilityCosts("SmoothDaily.dat");
+        uSmooth.printWeeklyReadings("SmoothWeekly.dat");
+        uSmooth.printMonthlyReadings("SmoothMonthly.dat");
+        
     }
 }

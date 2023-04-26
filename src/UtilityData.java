@@ -20,9 +20,12 @@ public class UtilityData
     static final double GASCONVERSION = 10.8237;
     // Multiplication factor representing additional cost of VAT on gas and electricity costs
     static final double VAT = 1.05;
+    // Directory from where input is read, and output saved
+    static final String DIRECTORY = "/home/cmb/misc/Home/StationRoad/Utilities/";
+    static final String GENDIRECTORY = DIRECTORY + "GeneratedFiles/";
     
     // The filename of the rates file.
-    static final String RatesFilename = "/home/cmb/misc/Home/StationRoad/Utilities/Rates.dat";
+    static final String RatesFilename = DIRECTORY + "Rates.dat";
     
     //----------------------------------------------------------------------
     // Instance variable - ArrayList holding rates, implicitly ordered by
@@ -43,6 +46,35 @@ public class UtilityData
         ratesData = new RatesData(new File(RatesFilename));
     }
 
+    /**********************************************************************
+     * Returns the size of the embedded ArrayList - ie the number of data
+     * entries this UtilityData object currently holds.
+     *
+     * @return Returns number of data elements in UtilityData object
+     */
+
+    public int size()
+    {
+        return utilityReadings.size();
+    }
+    
+    /**********************************************************************
+     * Getter for UtilityField data at a given index into the internal
+     * ArrayList
+     *
+     * @param The index for which data should be returned
+     * @return UtilityField object, if present, null if none
+     */
+
+    public UtilityField getGasData(int i)
+    {
+        if (i >= utilityReadings.size())
+        {
+            return null;
+        }
+        return utilityReadings.get(i);
+    }
+    
     /**********************************************************************
      * Getter for UtilityField data at a given date
      *
@@ -150,6 +182,53 @@ public class UtilityData
     }
 
     /**********************************************************************
+     * Set readings from an existing set of readings by smoothing them out;
+     * each new value is the average of the previous 30 days values.
+     */
+
+    // This method is written but not tested; should run through the elements
+    // of the existing data (in 'u'), and for each one calculate new values
+    // by smoothing cost data and putting into utilityReadings... Other
+    // values just copied.
+    
+    public void setReadingsFromExisting(UtilityData u)
+    {
+        if (u.size() == 0)
+        {
+            return;
+        }
+        for (int i = 0; i < u.size(); i++)
+        {
+            double avgGasCostTotal = 0.0, avgElecCostTotal = 0.0, avgTotalCostTotal = 0.0;
+            int span = (i > 30) ? 30 : i;
+            for (int j = i - span; j <= i; j++)
+            {
+                UtilityField uf = u.getGasData(j);
+                avgGasCostTotal   += uf.gascost;
+                avgElecCostTotal  += uf.eleccost;
+                avgTotalCostTotal += uf.totalcost;
+            }
+            UtilityField uf = new UtilityField();
+            uf.date         = u.getGasData(i).date;
+            uf.gasMeter     = u.getGasData(i).gasMeter;
+            uf.elecMeter    = u.getGasData(i).elecMeter;
+            uf.gasUsed      = u.getGasData(i).gasUsed;
+            uf.elecUsed     = u.getGasData(i).elecUsed;
+            uf.gasstanding  = u.getGasData(i).gasstanding;
+            uf.gasunitrate  = u.getGasData(i).gasunitrate;
+            uf.elecstanding = u.getGasData(i).elecstanding;
+            uf.elecunitrate = u.getGasData(i).elecunitrate;
+
+            uf.gascost      = avgGasCostTotal   / (span + 1);
+            uf.eleccost     = avgElecCostTotal  / (span + 1);
+            uf.totalcost    = avgTotalCostTotal / (span + 1);
+
+            utilityReadings.add(uf);
+            Collections.sort(utilityReadings);	// Make sure the entries are date sorted
+        }
+    }
+    
+    /**********************************************************************
      * Print out all of the meter readings currently held in this object
      * to the standard output
      */
@@ -169,11 +248,11 @@ public class UtilityData
      * file from which these can be plotted
      */
 
-    public void printUtilityCosts()
+    public void printUtilityCosts(String filename)
     {
         try
         {
-            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/Daily.dat");
+            PrintStream stream = new PrintStream(GENDIRECTORY + filename);
 
             stream.printf("#   Date          Gas Electric  Total\n" +
                           "#------------------------------------------\n");
@@ -189,7 +268,7 @@ public class UtilityData
         catch (FileNotFoundException e)
         {
             // Print an error message, but otherwise do nothing
-            System.out.println("Unable to open 'Daily.dat' for writing");
+            System.out.printf("Unable to open '%s' for writing\n", filename);
         }
     }
 
@@ -201,11 +280,11 @@ public class UtilityData
      * file.
      */
 
-    public void printWeeklyReadings()
+    public void printWeeklyReadings(String filename)
     {
         try
         {
-            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/Weekly.dat");
+            PrintStream stream = new PrintStream(GENDIRECTORY + filename);
 
             if (utilityReadings.size() == 0)
             {
@@ -245,7 +324,7 @@ public class UtilityData
         catch (FileNotFoundException e)
         {
             // Print an error message, but otherwise do nothing
-            System.out.println("Unable to open 'Weekly.dat' for writing");
+            System.out.printf("Unable to open '%s' for writing\n", filename);
         }
     }
 
@@ -256,7 +335,7 @@ public class UtilityData
      *
      */
 
-    public void printPerDayReadings()
+    public void printPerDayReadings(String filename)
     {
 	// Usage on each day of week (1..7); not all fields populated
         UtilityField DailyUsage[] = new UtilityField[8];
@@ -293,7 +372,7 @@ public class UtilityData
         }
         try
         {
-            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/DaysOfWeek.dat");
+            PrintStream stream = new PrintStream(GENDIRECTORY + filename);
 
             stream.printf("#   Gas Used  Elec Used     £Gas    £Elec   £Total\n" +
                           "#------------------------------------------------------\n");
@@ -311,7 +390,7 @@ public class UtilityData
         catch (FileNotFoundException e)
         {
             // Print an error message, but otherwise do nothing
-            System.out.println("Unable to open 'DaysOfWeek.dat' for writing");
+            System.out.printf("Unable to open '%s' for writing\n", filename);
         }
     }
 
@@ -320,7 +399,7 @@ public class UtilityData
      * to compute them on the fly
      */
 
-    public void printMonthlyReadings()
+    public void printMonthlyReadings(String filename)
     {
         int year, month;
         double gasUsed = 0.0, elecUsed = 0.0, gasCost = 0.0, elecCost = 0.0, totalCost = 0.0;
@@ -328,7 +407,7 @@ public class UtilityData
 
         try
         {
-            PrintStream stream = new PrintStream("/home/cmb/misc/Home/StationRoad/Utilities/GeneratedFiles/Monthly.dat");
+            PrintStream stream = new PrintStream(GENDIRECTORY + filename);
             stream.printf("# Month   Gas Used  Elec Used    £Gas   £Elec  £Total\n" +
                           "#-------------------------------------------------------\n");
             

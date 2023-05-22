@@ -46,6 +46,10 @@ public class MeterProcessMain
 	// Print monthly data to file for plotting;    argument is output filename
         u.printMonthlyReadings("Monthly.dat");
 
+        // Print daily cost and usage data to file for each year separately, so they
+        // can be compared
+        u.printYearOnYearCosts();
+        
         //------------------------------------------------------------------
         // Calculate smoothed out data - a new daily value is average of
         // previous 30 days values...

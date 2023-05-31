@@ -48,7 +48,7 @@ public class MeterProcessMain
 
         // Print daily cost and usage data to file for each year separately, so they
         // can be compared
-        u.printYearOnYearCosts();
+        u.printYearOnYearCosts("Year");
         
         //------------------------------------------------------------------
         // Calculate smoothed out data - a new daily value is average of
@@ -60,6 +60,7 @@ public class MeterProcessMain
         uSmooth.printUtilityCosts("SmoothDaily.dat");
         uSmooth.printWeeklyReadings("SmoothWeekly.dat");
         uSmooth.printMonthlyReadings("SmoothMonthly.dat");
+        uSmooth.printYearOnYearCosts("SmoothYear");
         
     }
 }

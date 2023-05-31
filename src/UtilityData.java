@@ -572,11 +572,10 @@ public class UtilityData
                           "#----------------------------------------------------------------------\n" +
                           "\n" +
                           "load \"/home/cmb/include/gnuplot.inc\"\n" +
-                          "\n" +
-                          "#----------------------------------------------------------------------\n" +
-                          "\n");
+                          "\n\n");
             // ---------- First plot ----------
-            stream.printf("@termpng03\n" +
+            stream.printf("#----------------------------------------------------------------------\n" +
+                          "@termpng03\n" +
                           "\n" +
                           "set output \"GeneratedFiles/Graphs/%sly01.png\"\n" +
                           "set title \"EON daily gas costs, comparing years\"\n" +
@@ -593,7 +592,8 @@ public class UtilityData
                               i, i, (i == year) ? " " : ",\\");
             }
             // ---------- Second plot ----------
-            stream.printf("@termpng03\n" +
+            stream.printf("#----------------------------------------------------------------------\n" +
+                          "@termpng03\n" +
                           "\n" +
                           "set output \"GeneratedFiles/Graphs/%sly02.png\"\n" +
                           "set title \"EON daily electric costs, comparing years\"\n" +
@@ -610,7 +610,8 @@ public class UtilityData
                               i, i, (i == year) ? " " : ",\\");
             }
             // ---------- Third plot ----------
-            stream.printf("@termpng03\n" +
+            stream.printf("#----------------------------------------------------------------------\n" +
+                          "@termpng03\n" +
                           "\n" +
                           "set output \"GeneratedFiles/Graphs/%sly03.png\"\n" +
                           "set title \"EON daily total costs, comparing years\"\n" +

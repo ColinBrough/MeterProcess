@@ -582,6 +582,7 @@ public class UtilityData
                           "set key right top\n" +
                           "set xlabel \"Day in Year\"\n" +
                           "set ylabel \"Gas costs (£)\"\n" +
+                          "set xtics left ( \"Jan\" 1, \"Feb\" 32, \"Mar\" 60, \"Apr\" 91, \"May\" 121, \"Jun\" 152, \"Jul\" 182, \"Aug\" 213, \"Sep\" 244, \"Oct\" 274, \"Nov\" 305, \"Dec\" 335 )\n" +
                           "set grid\n" +
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);

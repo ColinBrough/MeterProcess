@@ -30,7 +30,6 @@ public class UtilityData
     //----------------------------------------------------------------------
     // Instance variable - ArrayList holding rates, implicitly ordered by
     // date, rates applying most recently added last to the end of the list.
-    // And 
 
     private ArrayList<UtilityField> utilityReadings;
     private RatesData ratesData;
@@ -140,7 +139,7 @@ public class UtilityData
     }
     
     /**********************************************************************
-     * Set one or more readings to be stored in the internal  utilityReadings 
+     * Set one or more readings to be stored in the internal  utilityReadings
      * ArrayList, potentially integrating those with already present - so
      * storing in date order, and doing some kind of sanity checking if two
      * readings with the same date are read in.
@@ -183,25 +182,26 @@ public class UtilityData
 
     /**********************************************************************
      * Set readings from an existing set of readings by smoothing them out;
-     * each new value is the average of the previous 30 days values.
+     * each new value is the average of the *next* 30 days, starting from
+     * the current day. Average at the end of the range, where there are
+     * not 30 future days, is over all the remaining days. Has the effect
+     * that the last "average" value is the same as the last value...
      */
-
-    // This method is written but not tested; should run through the elements
-    // of the existing data (in 'u'), and for each one calculate new values
-    // by smoothing cost data and putting into utilityReadings... Other
-    // values just copied.
-    
+   
     public void setReadingsFromExisting(UtilityData u)
     {
+        int i = 0, j = 0, span = 0;
         if (u.size() == 0)
         {
             return;
         }
-        for (int i = 0; i < u.size(); i++)
+        for (i = 0; i < u.size(); i++)
         {
             double avgGasCostTotal = 0.0, avgElecCostTotal = 0.0, avgTotalCostTotal = 0.0;
-            int span = (i > 30) ? 30 : i;
-            for (int j = i - span; j <= i; j++)
+            span = ( (i + 30) <= u.size() ) ? 30 : u.size() - i;
+            // System.out.printf("i = %3d; span = %3d  u.size() = %3d\n", i, span, u.size());
+
+            for (j = i; j < (i + span); j++)
             {
                 UtilityField uf = u.getGasData(j);
                 avgGasCostTotal   += uf.gascost;
@@ -218,11 +218,11 @@ public class UtilityData
             uf.gasunitrate  = u.getGasData(i).gasunitrate;
             uf.elecstanding = u.getGasData(i).elecstanding;
             uf.elecunitrate = u.getGasData(i).elecunitrate;
-
-            uf.gascost      = avgGasCostTotal   / (span + 1);
-            uf.eleccost     = avgElecCostTotal  / (span + 1);
-            uf.totalcost    = avgTotalCostTotal / (span + 1);
-
+            
+            uf.gascost      = avgGasCostTotal   / span;
+            uf.eleccost     = avgElecCostTotal  / span;
+            uf.totalcost    = avgTotalCostTotal / span;
+            
             utilityReadings.add(uf);
             Collections.sort(utilityReadings);	// Make sure the entries are date sorted
         }
@@ -274,7 +274,7 @@ public class UtilityData
 
     /**********************************************************************
      * Output meter data (usage, cost) for whole weeks. Any initial partial
-     * week is ignored. Full weeks are output, and the last (possibly 
+     * week is ignored. Full weeks are output, and the last (possibly
      * partial) week is output. This depends on every day in the ArrayList
      * being filled in (ie after successful interpolation). Output goes to
      * file.
@@ -353,7 +353,7 @@ public class UtilityData
         }
         
 	// Around when we moved in, after dehumidifiers stopped, so electricity usage
-        // should be coming down. 
+        // should be coming down.
         LocalDate d = LocalDate.of(2022, 8, 1);
         for (int i = 0; i < utilityReadings.size(); i++)
         {
@@ -638,7 +638,7 @@ public class UtilityData
     }
     
     /**********************************************************************
-     * Given a populated set of meter readings, run through and add 
+     * Given a populated set of meter readings, run through and add
      * interpolated readings where there are any gaps.
      */
 

@@ -584,8 +584,6 @@ public class UtilityData
                           "set ylabel \"Gas costs (£)\"\n" +
                           "set xtics left ( \"Jan\" 1, \"Feb\" 32, \"Mar\" 60, \"Apr\" 91, \"May\" 121, \"Jun\" 152, \"Jul\" 182, \"Aug\" 213, \"Sep\" 244, \"Oct\" 274, \"Nov\" 305, \"Dec\" 335 )\n" +
                           "set grid\n" +
-                          "set style line 1 lw 1.7\n" +	// Define linestyles, width = 2
-                          "set style line 2 lw 3\n" +	// for use below, width = 3
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
             for (int i = 2022; i <= year; i++)
@@ -605,8 +603,6 @@ public class UtilityData
                           "set xlabel \"Day in Year\"\n" +
                           "set ylabel \"Electric costs (£)\"\n" +
                           "set grid\n" +
-                          "set style line 1 lw 1.7\n" +	// Define linestyles, width = 2
-                          "set style line 2 lw 3\n" +	// for use below, width = 3
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
             for (int i = 2022; i <= year; i++)
@@ -626,8 +622,6 @@ public class UtilityData
                           "set xlabel \"Day in Year\"\n" +
                           "set ylabel \"Total costs (£)\"\n" +
                           "set grid\n" +
-                          "set style line 1 lw 1.7\n" +	// Define linestyles, width = 2
-                          "set style line 2 lw 3\n" +	// for use below, width = 3
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
             for (int i = 2022; i <= year; i++)

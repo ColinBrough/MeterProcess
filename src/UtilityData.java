@@ -584,13 +584,16 @@ public class UtilityData
                           "set ylabel \"Gas costs (£)\"\n" +
                           "set xtics left ( \"Jan\" 1, \"Feb\" 32, \"Mar\" 60, \"Apr\" 91, \"May\" 121, \"Jun\" 152, \"Jul\" 182, \"Aug\" 213, \"Sep\" 244, \"Oct\" 274, \"Nov\" 305, \"Dec\" 335 )\n" +
                           "set grid\n" +
+                          "set style line 1 lw 1.7\n" +	// Define linestyles, width = 2
+                          "set style line 2 lw 3\n" +	// for use below, width = 3
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
             for (int i = 2022; i <= year; i++)
             {
-                stream.printf("    \"%s%s%d.dat\" using 1:4 with lines title \"%d\"%s\n",
-                              GENDIRECTORY, filenameBase,
-                              i, i, (i == year) ? " " : ",\\");
+                stream.printf("    \"%s%s%d.dat\" using 1:4 with lines title \"%d\"%s%s\n",
+                              GENDIRECTORY, filenameBase, i, i,
+                              (i == (year-1)) ? " ls 1" : "", // Last but one year, linestyle 1
+                              (i == year) ? " ls 2" : ",\\"); // Last year, linestyle 2
             }
             // ---------- Second plot ----------
             stream.printf("#----------------------------------------------------------------------\n" +
@@ -602,13 +605,16 @@ public class UtilityData
                           "set xlabel \"Day in Year\"\n" +
                           "set ylabel \"Electric costs (£)\"\n" +
                           "set grid\n" +
+                          "set style line 1 lw 1.7\n" +	// Define linestyles, width = 2
+                          "set style line 2 lw 3\n" +	// for use below, width = 3
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
             for (int i = 2022; i <= year; i++)
             {
-                stream.printf("    \"%s%s%d.dat\" using 1:5 with lines title \"%d\"%s\n",
-                              GENDIRECTORY, filenameBase,
-                              i, i, (i == year) ? " " : ",\\");
+                stream.printf("    \"%s%s%d.dat\" using 1:5 with lines title \"%d\"%s%s\n",
+                              GENDIRECTORY, filenameBase, i, i, 
+                              (i == (year-1)) ? " ls 1" : "", // Last but one year, linestyle 1
+                              (i == year) ? " ls 2" : ",\\"); // Last year, linestyle 2
             }
             // ---------- Third plot ----------
             stream.printf("#----------------------------------------------------------------------\n" +
@@ -620,13 +626,16 @@ public class UtilityData
                           "set xlabel \"Day in Year\"\n" +
                           "set ylabel \"Total costs (£)\"\n" +
                           "set grid\n" +
+                          "set style line 1 lw 1.7\n" +	// Define linestyles, width = 2
+                          "set style line 2 lw 3\n" +	// for use below, width = 3
                           "\n" +
                           "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
             for (int i = 2022; i <= year; i++)
             {
-                stream.printf("    \"%s%s%d.dat\" using 1:6 with lines title \"%d\"%s\n",
-                              GENDIRECTORY, filenameBase,
-                              i, i, (i == year) ? " " : ",\\");
+                stream.printf("    \"%s%s%d.dat\" using 1:6 with lines title \"%d\"%s%s\n",
+                              GENDIRECTORY, filenameBase, i, i, 
+                              (i == (year-1)) ? " ls 1" : "", // Last but one year, linestyle 1
+                              (i == year) ? " ls 2" : ",\\"); // Last year, linestyle 2
             }
             stream.close();
         }

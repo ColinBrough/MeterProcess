@@ -11,8 +11,6 @@ import java.io.*;
 
 public class MeterProcessMain
 {
-    static final String DIRECTORY = "/home/cmb/misc/Home/StationRoad/Utilities/";
-
     /**********************************************************************
      * main method - program entry point
      *
@@ -26,7 +24,7 @@ public class MeterProcessMain
         UtilityData u = new UtilityData();	// Implicitly reads the rates data
 
         // First read the historic data
-        u.setReadingsFromFile(new File(DIRECTORY + "MeterReadings.dat"));
+        u.setReadingsFromFile(new File("/home/cmb/misc/Home/StationRoad/Utilities/MeterReadings.dat"));
 
         // Then read in and add to the same dataset the more recent stuff from Dropbox...
         u.setReadingsFromFile(new File("/home/cmb/Dropbox/Misc/elecgas.txt"));

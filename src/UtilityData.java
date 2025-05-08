@@ -159,16 +159,19 @@ public class UtilityData
                 {
                     continue;	// Skip past comment lines
                 }
-                String dateString = line.substring(0,10);
-                LocalDate d = LocalDate.parse(dateString, formatter);
-                try (Scanner scl = new Scanner(line.substring(10)))
+                if (line.length() >= 10)
                 {
-                    this.addUtilityReading(d, scl.nextDouble(),scl.nextDouble());
-                    scl.close();
-                }
-                catch (NoSuchElementException e)
-                {
-                    // Do nothing - just skip over
+                    String dateString = line.substring(0,10);
+                    LocalDate d = LocalDate.parse(dateString, formatter);
+                    try (Scanner scl = new Scanner(line.substring(10)))
+                    {
+                        this.addUtilityReading(d, scl.nextDouble(),scl.nextDouble());
+                        scl.close();
+                    }
+                    catch (NoSuchElementException e)
+                    {
+                        // Do nothing - just skip over
+                    }
                 }
             }
             sc.close();
@@ -627,6 +630,44 @@ public class UtilityData
             for (int i = 2022; i <= year; i++)
             {
                 stream.printf("    \"%s%s%d.dat\" using 1:6 with lines title \"%d\"%s%s\n",
+                              GENDIRECTORY, filenameBase, i, i, 
+                              (i == (year-1)) ? " ls 1" : "", // Last but one year, linestyle 1
+                              (i == year) ? " ls 2" : ",\\"); // Last year, linestyle 2
+            }
+            // ---------- Fourth plot - gas usage, not costs ----------
+            stream.printf("#----------------------------------------------------------------------\n" +
+                          "@termpng03\n" +
+                          "\n" +
+                          "set output \"GeneratedFiles/Graphs/%sly04.png\"\n" +
+                          "set title \"EON daily GAS USAGE, comparing years\"\n" +
+                          "set key right top\n" +
+                          "set xlabel \"Day in Year\"\n" +
+                          "set ylabel \"Total usage\"\n" +
+                          "set grid\n" +
+                          "\n" +
+                          "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
+            for (int i = 2022; i <= year; i++)
+            {
+                stream.printf("    \"%s%s%d.dat\" using 1:2 with lines title \"%d\"%s%s\n",
+                              GENDIRECTORY, filenameBase, i, i, 
+                              (i == (year-1)) ? " ls 1" : "", // Last but one year, linestyle 1
+                              (i == year) ? " ls 2" : ",\\"); // Last year, linestyle 2
+            }
+            // ---------- Fifth plot - electricity usage, not costs ----------
+            stream.printf("#----------------------------------------------------------------------\n" +
+                          "@termpng03\n" +
+                          "\n" +
+                          "set output \"GeneratedFiles/Graphs/%sly05.png\"\n" +
+                          "set title \"EON daily ELECTRICITY USAGE, comparing years\"\n" +
+                          "set key right top\n" +
+                          "set xlabel \"Day in Year\"\n" +
+                          "set ylabel \"Total usage\"\n" +
+                          "set grid\n" +
+                          "\n" +
+                          "plot [ 0 : 366 ] [ 0: ] \\\n", filenameBase);
+            for (int i = 2022; i <= year; i++)
+            {
+                stream.printf("    \"%s%s%d.dat\" using 1:3 with lines title \"%d\"%s%s\n",
                               GENDIRECTORY, filenameBase, i, i, 
                               (i == (year-1)) ? " ls 1" : "", // Last but one year, linestyle 1
                               (i == year) ? " ls 2" : ",\\"); // Last year, linestyle 2
